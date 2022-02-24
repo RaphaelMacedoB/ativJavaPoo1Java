@@ -4,21 +4,29 @@ public class Carro {
     private double capacidade_tanque;
     private double velMaxima;
     private double velAtual;
-    private double aceleracaoMedia;
     private double consumoMedio;
+    private String nome;
 
-    Carro(double quilometragem, double volume_combustivel,double capacidade_tanque, double velMaxima, double velAtual, double aceleracaoMedia, double consumoMedio){
+    Carro(double quilometragem, double volume_combustivel,double capacidade_tanque, double velMaxima, double velAtual, double consumoMedio, String nome){
         setQuilometragem(quilometragem);
         setVolume_combustivel(volume_combustivel);
         setCapacidade_tanque(capacidade_tanque);
         setVelMaxima(velMaxima);
         setVelAtual(velAtual);
-        setAceleracaoMedia(aceleracaoMedia);
         setConsumoMedio(consumoMedio);
+        setNome(nome);
     }
 
     public double getQuilometragem() {
         return this.quilometragem;
+    }
+
+    public String getNome() {
+        return this.nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
     public void setQuilometragem(double quilometragem) {
@@ -57,14 +65,6 @@ public class Carro {
         this.velAtual = velAtual;
     }
 
-    public double getAceleracaoMedia() {
-        return this.aceleracaoMedia;
-    }
-
-    public void setAceleracaoMedia(double aceleracaoMedia) {
-        this.aceleracaoMedia = aceleracaoMedia;
-    }
-
     public double getConsumoMedio() {
         return this.consumoMedio;
     }
@@ -89,33 +89,33 @@ public class Carro {
         }
     }
 
-    public void acelerar(double tempo){
-        double aceleracao = 0;
+    public void acelerar(double tempo)throws Exception{
         
-        System.out.format("Veículo acelerou por %.2f horas.\n",tempo);
+        if(this.volume_combustivel > 0){
+            double aceleracaoMedia = ((this.velMaxima - this.velAtual)/tempo) * 3.6;
+            double acelerar = 0;
+            double distancia;
+            for(int i = 0; i < tempo; i++){
+                acelerar+=aceleracaoMedia;
+                if(acelerar > this.velMaxima){
+                    acelerar = this.velMaxima;
+                    setVelAtual(acelerar);
+                    break;
+                }
+            }
+            distancia = this.velAtual * tempo;
+            double combustivel_gasto = (distancia * this.consumoMedio) / 1000;
+            setVolume_combustivel(this.volume_combustivel - combustivel_gasto);
+            System.out.printf("Distância percorrida: %.0fm\n",distancia);
+            System.out.printf("Combustível gasto: %.2fl\n",combustivel_gasto);
 
-        for (int i = 0; i < tempo; i++) {
-            aceleracao += this.aceleracaoMedia;
+        
+        }else{
+            System.out.println("Veículo sem gasolina!");
         }
-        aceleracao = aceleracao + this.velAtual;
-        double distancia_percorrida = aceleracao * tempo;
-        double gasolina_gasta = ((distancia_percorrida * this.aceleracaoMedia) - this.volume_combustivel)/1000;
-        
-        setVelAtual(aceleracao);
-        setVolume_combustivel(gasolina_gasta);
-
     }
 
     public void frear(double tempo){
-        double aceleracao = 0;
-        for (int i = 0; i < tempo; i++) {
-            aceleracao -= this.aceleracaoMedia;
-        }
-        aceleracao = aceleracao + this.velAtual;
-        if(aceleracao < 0){
-            System.out.println("A velocidade não pode ser inferior a 0 !");
-        }else{
-            setVelAtual(aceleracao);
-        }
+        
     }
 }
